@@ -28,38 +28,3 @@ pitstop-check found 2 issues
 Most retry bugs are obvious in hindsight but invisible in code review.
 
 pitstop-check is a tiny local-first CLI that flags common retry mistakes before they become latency, cost, or reliability problems.
-
-### 2. Clean `package.json`
-Paste your current `package.json` here if you want a precise edit, but this is the target shape:
-
-```json
-{
-  "name": "pitstop-check",
-  "version": "0.1.0",
-  "description": "Catch common retry anti-patterns before they hit production",
-  "type": "commonjs",
-  "bin": {
-    "pitstop-check": "dist/index.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "check": "node dist/index.js ./sample-bad-retry"
-  },
-  "keywords": [
-    "retry",
-    "429",
-    "reliability",
-    "typescript",
-    "cli"
-  ],
-  "license": "ISC",
-  "dependencies": {
-    "ts-morph": "^latest"
-  },
-  "devDependencies": {
-    "@types/node": "^latest",
-    "ts-node": "^latest",
-    "typescript": "^latest"
-  }
-}
-```
