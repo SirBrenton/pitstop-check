@@ -1,0 +1,12 @@
+{
+  "name": "pitstop-check",
+  "version": "0.1.0",
+  "type": "commonjs",
+  "bin": {
+    "pitstop-check": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "check": "node dist/index.js ./sample-bad-retry"
+  }
+}
