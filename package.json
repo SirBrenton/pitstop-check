@@ -1,6 +1,7 @@
 {
   "name": "pitstop-check",
   "version": "0.1.0",
+  "description": "Catch common retry anti-patterns before they hit production",
   "type": "commonjs",
   "bin": {
     "pitstop-check": "dist/index.js"
@@ -8,5 +9,21 @@
   "scripts": {
     "build": "tsc",
     "check": "node dist/index.js ./sample-bad-retry"
+  },
+  "keywords": [
+    "retry",
+    "429",
+    "reliability",
+    "typescript",
+    "cli"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "ts-morph": "^latest"
+  },
+  "devDependencies": {
+    "@types/node": "^latest",
+    "ts-node": "^latest",
+    "typescript": "^latest"
   }
 }
