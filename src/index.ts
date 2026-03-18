@@ -40,7 +40,8 @@ for (const file of project.getSourceFiles()) {
   const issues: Issue[] = checkRetryIssues(file);
 
   for (const issue of issues) {
-    console.log(`[WARN] ${issue.file}:${issue.line} — ${issue.message}`);
+    const rel = path.relative(process.cwd(), issue.file);
+    console.log(`[WARN] ${rel}:${issue.line} — ${issue.message}`);
   }
 
   totalIssues += issues.length;
