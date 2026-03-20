@@ -1,11 +1,17 @@
 {
   "name": "pitstop-check",
   "version": "0.1.0",
-  "description": "Catch common retry anti-patterns before they hit production",
+  "description": "Catch common AI/API retry anti-patterns before they hit production",
   "type": "commonjs",
   "bin": {
     "pitstop-check": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
   "scripts": {
     "build": "tsc",
     "check": "node dist/index.js ./sample-bad-retry"
@@ -15,15 +21,25 @@
     "429",
     "reliability",
     "typescript",
-    "cli"
+    "cli",
+    "rate-limit",
+    "ai"
   ],
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SirBrenton/pitstop-check.git"
+  },
+  "homepage": "https://github.com/SirBrenton/pitstop-check#readme",
+  "bugs": {
+    "url": "https://github.com/SirBrenton/pitstop-check/issues"
+  },
   "dependencies": {
-    "ts-morph": "^latest"
+    "ts-morph": "^25.0.1"
   },
   "devDependencies": {
-    "@types/node": "^latest",
-    "ts-node": "^latest",
-    "typescript": "^latest"
+    "@types/node": "^24.12.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
