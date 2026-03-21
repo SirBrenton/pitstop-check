@@ -5,6 +5,22 @@ import { checkRetryIssues, Issue } from "./rules";
 import path from "path";
 import fs from "fs";
 
+const IGNORE_PATTERNS = [
+  "/node_modules/",
+  "/dist/",
+  "/build/",
+  "/_next/",
+  "/chunks/",
+  ".min.js",
+  ".min.ts",
+];
+
+const isTestFile = (p: string) =>
+  p.endsWith(".test.ts") ||
+  p.endsWith(".test.js") ||
+  p.endsWith(".spec.ts") ||
+  p.endsWith(".spec.js");
+
 const targetArg = process.argv[2];
 
 if (!targetArg) {
@@ -31,8 +47,8 @@ for (const file of project.getSourceFiles()) {
   const filePath = file.getFilePath();
 
   // hard excludes
-  if (filePath.includes("/node_modules/")) continue;
-  if (filePath.includes("/dist/")) continue;
+  if (IGNORE_PATTERNS.some((p) => filePath.includes(p))) continue;
+  if (isTestFile(filePath)) continue;
 
   // when testing inside this repo, don't scan the tool itself
   if (targetDir === process.cwd() && filePath.includes("/src/")) continue;
