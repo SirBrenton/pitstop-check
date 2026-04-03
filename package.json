@@ -1,6 +1,6 @@
 {
   "name": "pitstop-check",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Catch common AI/API retry anti-patterns before they hit production",
   "type": "commonjs",
   "bin": {
