@@ -78,8 +78,8 @@ npx pitstop-check ./src/api/client.ts
 ## Notes
 
 - TypeScript / JavaScript only
-- Heuristic — expect false positives (especially in tests)
-- Best used as a review aid
+- Heuristic-based — flags only files with actual retry execution behavior (setTimeout, pRetry, backoff). Classifier functions, DB utilities, and format helpers are not flagged.
+- Best used as a review aid on API client and retry handler paths
 
 -----
 
