@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 
 const IGNORE_PATTERNS = [
+  // existing
   "/node_modules/",
   "/dist/",
   "/build/",
@@ -13,6 +14,30 @@ const IGNORE_PATTERNS = [
   "/chunks/",
   ".min.js",
   ".min.ts",
+  // from learning log — architecture exclusions
+  "/vendor/",
+  "/static/img/",
+  "/static/logo",
+  "/vditor/",
+  // mock and test infrastructure
+  "/mock-llm-server/",
+  "/mock-server/",
+  "/scripts/mock",
+  "/scripts/test",
+  "/__tests__/",
+  "/mocks/",
+  "/__mocks__/",
+  ".mock.ts",
+  ".mock.js",
+  // application build and lint scripts (not API clients)
+  "/apps/web/scripts/",
+  "/scripts/check-",
+  // non-API-client paths
+  "health-check",
+  "device-auth",
+  // SvelteKit server route handlers
+  "+server.ts",
+  "+server.js",
 ];
 
 const isTestFile = (p: string) =>
@@ -20,6 +45,15 @@ const isTestFile = (p: string) =>
   p.endsWith(".test.js") ||
   p.endsWith(".spec.ts") ||
   p.endsWith(".spec.js");
+
+const isServerRouteHandler = (p: string) =>
+  p.endsWith("+server.ts") ||
+  p.endsWith("+server.js");
+
+const isMockOrTestInfra = (p: string) =>
+  p.includes("/mock-") ||
+  p.includes("/scripts/mock") ||
+  p.includes("/scripts/test");
 
 const targetArg = process.argv[2];
 
@@ -49,6 +83,8 @@ for (const file of project.getSourceFiles()) {
   // hard excludes
   if (IGNORE_PATTERNS.some((p) => filePath.includes(p))) continue;
   if (isTestFile(filePath)) continue;
+  if (isServerRouteHandler(filePath)) continue;
+  if (isMockOrTestInfra(filePath)) continue;
 
   // when testing inside this repo, don't scan the tool itself
   if (targetDir === process.cwd() && filePath.includes("/src/")) continue;
