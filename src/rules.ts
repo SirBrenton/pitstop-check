@@ -6,9 +6,7 @@ export interface Issue {
 }
 
 function stripComments(source: string): string {
-  // Remove single-line comments
   let stripped = source.replace(/\/\/[^\n]*/g, "");
-  // Remove multi-line comments
   stripped = stripped.replace(/\/\*[\s\S]*?\*\//g, "");
   return stripped;
 }
@@ -26,12 +24,26 @@ function firstMatchLine(source: string, patterns: RegExp[]): number {
   return 1;
 }
 
+// Gate: file must contain actual retry execution behavior
+// not just 429 detection, classification, or error typing
+function hasRetryExecution(source: string): boolean {
+  return /setTimeout|setInterval|await\s+sleep|await\s+delay|\.retry\s*\(|pRetry|p-retry|retry\s*\(|backoff\s*\(|exponential/i.test(source);
+}
+
+// Gate: file must look like an API client or retry handler
+// not a classifier, formatter, or DB utility
+function looksLikeRetryHandler(source: string): boolean {
+  return /fetch\s*\(|axios|got\(|request\s*\(|httpClient|apiClient|callApi|makeRequest|withRetry|executeWithRetry|retryHandler|retryPolicy/i.test(source);
+}
+
 export function checkRetryAfterIgnored(file: SourceFile): Issue | null {
   const raw = file.getFullText();
   const source = stripComments(raw);
   const has429 = /\b429\b/.test(source);
   const hasRetryAfter = /retry-after/i.test(source);
   if (!has429 || hasRetryAfter) return null;
+  // Only flag if file actually executes retry behavior
+  if (!hasRetryExecution(source)) return null;
   return {
     file: file.getFilePath(),
     line: firstMatchLine(raw, [/\b429\b/, /status.*429/i, /429.*status/i]),
@@ -45,6 +57,8 @@ export function checkUnboundedRetry(file: SourceFile): Issue | null {
   const hasInfiniteLoop = /while\s*\(\s*true\s*\)|for\s*\(\s*;\s*;\s*\)/i.test(source);
   const hasBound = /maxAttempts|maxRetries|maxElapsed|deadline|timeout|attempt\s*[<>]=?\s*\d+/i.test(source);
   if (!hasInfiniteLoop || hasBound) return null;
+  // Only flag if the infinite loop is in a retry/API context
+  if (!hasRetryExecution(source) && !looksLikeRetryHandler(source)) return null;
   return {
     file: file.getFilePath(),
     line: firstMatchLine(raw, [/while\s*\(\s*true\s*\)/i, /for\s*\(\s*;\s*;\s*\)/i]),
@@ -59,6 +73,8 @@ export function checkBlanket429(file: SourceFile): Issue | null {
   const hasRetryBehavior = /continue|retry|setTimeout|backoff|attempt/i.test(source);
   const hasClassification = /\bCAP\b|\bWAIT\b|\bSTOP\b|quota|burst|tpm|rpm|capacity|context_length|payload too large|too large/i.test(source);
   if (!has429 || !hasRetryBehavior || hasClassification) return null;
+  // Only flag if file actually executes retry behavior
+  if (!hasRetryExecution(source)) return null;
   return {
     file: file.getFilePath(),
     line: firstMatchLine(raw, [/\b429\b/, /status.*429/i, /429.*status/i]),
