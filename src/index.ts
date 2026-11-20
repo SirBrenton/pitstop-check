@@ -70,10 +70,29 @@ if (!fs.existsSync(targetDir)) {
 }
 
 const project = new Project();
-project.addSourceFilesAtPaths([
-  path.join(targetDir, "**/*.ts"),
-  path.join(targetDir, "**/*.js"),
-]);
+if (fs.existsSync(targetDir)) {
+  const targetStat = fs.statSync(targetDir);
+
+  if (targetStat.isFile()) {
+    const extension = path.extname(targetDir).toLowerCase();
+    if (extension !== ".ts" && extension !== ".js") {
+      console.error("Unsupported file extension: " + targetDir);
+      process.exit(1);
+    }
+    project.addSourceFileAtPath(targetDir);
+  } else if (targetStat.isDirectory()) {
+    project.addSourceFilesAtPaths([
+      path.join(targetDir, "**/*.ts"),
+      path.join(targetDir, "**/*.js"),
+    ]);
+  } else {
+    console.error(`Unsupported path type: ${targetDir}`);
+    process.exit(1);
+  }
+} else {
+  console.error(`Path does not exist: ${targetDir}`);
+  process.exit(1);
+}
 
 let totalIssues = 0;
 
